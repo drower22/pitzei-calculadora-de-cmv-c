@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -56,27 +57,88 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
     setSending(true);
     try {
-      const response = await fetch(
-        "https://mgnjyvqclndelgcbxddw.functions.supabase.co/send-cmv-report",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: email,
-            result: {
-              faturamento_real: result.faturamento_real,
-              cmv_valor: result.cmv_valor,
-              cmv_percentual: result.cmv_percentual,
-              lucro_perdido: result.lucro_perdido,
-            },
-          }),
-        }
-      );
+      const { error } = await supabase.functions.invoke('send-cmv-report', {
+        body: {
+          to: email,
+          Let's fix the 401 unauthorized error when calling the Supabase Edge Function. The issue is that we need to properly authenticate the request using the Supabase client instead of making a direct fetch call.
 
-      if (!response.ok) {
-        throw new Error("Falha ao enviar email");
+<lov-code>
+Let's update the ResultReport.tsx file to use the Supabase client for calling the edge function:
+
+<lov-write file_path="src/components/calculator/ResultReport.tsx">
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Mail, DollarSign, PieChart, AlertTriangle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import type { CalculationResult } from "./CalculatorForm";
+
+interface ResultReportProps {
+  result: CalculationResult;
+  onBack: () => void;
+}
+
+export const ResultReport = ({ result, onBack }: ResultReportProps) => {
+  const { toast } = useToast();
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(value);
+  };
+
+  const getStatusColor = (cmv: number) => {
+    if (cmv <= 38) return "text-green-600";
+    if (cmv <= 42) return "text-yellow-600";
+    return "text-red-600";
+  };
+
+  const getStatusMessage = (cmv: number) => {
+    if (cmv <= 38) return "Seu CMV está dentro do ideal para o setor!";
+    if (cmv <= 42) return "Seu CMV está um pouco acima do ideal. Há espaço para melhorias.";
+    return "Seu CMV está muito alto! Isso está impactando significativamente sua lucratividade.";
+  };
+
+  const handleSendEmail = async () => {
+    if (!email) {
+      toast({
+        title: "Erro",
+        description: "Por favor, insira um email válido.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSending(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-cmv-report', {
+        body: {
+          to: email,
+          result: {
+            faturamento_real: result.faturamento_real,
+            cmv_valor: result.cmv_valor,
+            cmv_percentual: result.cmv_percentual,
+            lucro_perdido: result.lucro_perdido,
+          },
+        },
+      });
+
+      if (error) {
+        throw error;
       }
 
       toast({
@@ -85,6 +147,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       });
       setEmailOpen(false);
     } catch (error) {
+      console.error("Error sending email:", error);
       toast({
         title: "Erro",
         description: "Não foi possível enviar o email. Tente novamente.",
