@@ -9,7 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      calculadora_cmv: {
+        Row: {
+          cmv_percentual: number
+          cmv_valor: number
+          created_at: string | null
+          data_criacao: string | null
+          email: string
+          faturamento: number
+          id: string
+          inclui_taxas: boolean
+          lucro_perdido: number
+          taxas_repassadas: number
+          total_compras: number
+        }
+        Insert: {
+          cmv_percentual: number
+          cmv_valor: number
+          created_at?: string | null
+          data_criacao?: string | null
+          email: string
+          faturamento: number
+          id?: string
+          inclui_taxas?: boolean
+          lucro_perdido: number
+          taxas_repassadas?: number
+          total_compras: number
+        }
+        Update: {
+          cmv_percentual?: number
+          cmv_valor?: number
+          created_at?: string | null
+          data_criacao?: string | null
+          email?: string
+          faturamento?: number
+          id?: string
+          inclui_taxas?: boolean
+          lucro_perdido?: number
+          taxas_repassadas?: number
+          total_compras?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

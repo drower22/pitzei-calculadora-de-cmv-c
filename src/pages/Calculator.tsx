@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   faturamento: number;
@@ -24,6 +27,8 @@ interface CalculationResult {
 
 const Calculator = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [session, setSession] = useState(null);
   const [formData, setFormData] = useState<FormData>({
     faturamento: 0,
     inclui_taxas: false,
@@ -34,6 +39,26 @@ const Calculator = () => {
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user?.email) {
+        setFormData(prev => ({ ...prev, email: session.user.email }));
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session?.user?.email) {
+        setFormData(prev => ({ ...prev, email: session.user.email }));
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const handleCalculate = async () => {
     try {
       setLoading(true);
@@ -43,17 +68,6 @@ const Calculator = () => {
         toast({
           title: "Erro",
           description: "Por favor, preencha todos os campos obrigatórios.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        toast({
-          title: "Erro",
-          description: "Por favor, insira um email válido.",
           variant: "destructive",
         });
         return;
@@ -110,6 +124,21 @@ const Calculator = () => {
     }
   };
 
+  if (!session) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card className="max-w-md mx-auto p-6">
+          <h2 className="text-2xl font-bold mb-6">Login Necessário</h2>
+          <Auth 
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="light"
+          />
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <motion.div
@@ -118,7 +147,15 @@ const Calculator = () => {
         transition={{ duration: 0.5 }}
       >
         <Card className="max-w-2xl mx-auto p-6 glass-card">
-          <h2 className="text-2xl font-bold mb-6">Calculadora de CMV</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Calculadora de CMV</h2>
+            <Button
+              variant="outline"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Sair
+            </Button>
+          </div>
           
           <div className="space-y-6">
             <div>
