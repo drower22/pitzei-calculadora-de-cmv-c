@@ -25,8 +25,12 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#ff5210",
+          foreground: "#ffffff",
+        },
+        brand: {
+          orange: "#ff5210",
+          black: "#000000",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -52,6 +56,10 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        axiforma: ["Axiforma", "Arial", "sans-serif"],
+        arial: ["Arial", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",

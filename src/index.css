@@ -32,12 +32,31 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-axiforma;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-axiforma text-brand-black;
+  }
+  p, span, div {
+    @apply font-arial text-brand-black;
   }
 }
 
 .glass-card {
   @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg;
+}
+
+.btn-primary {
+  @apply bg-brand-orange text-white font-axiforma px-6 py-3 rounded-lg 
+         shadow-lg hover:shadow-xl transition-all duration-300 
+         hover:bg-opacity-90 active:transform active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-white text-brand-orange border-2 border-brand-orange font-axiforma 
+         px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all 
+         duration-300 hover:bg-brand-orange hover:text-white 
+         active:transform active:scale-95;
 }
 
 .animate-in {

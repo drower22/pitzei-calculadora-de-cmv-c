@@ -84,25 +84,25 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
       className="space-y-6"
     >
       <div className="text-center mb-8">
-        <Calculator className="w-12 h-12 mx-auto mb-4 text-blue-500" />
-        <h2 className="text-2xl font-bold text-gray-900">Calculadora de CMV</h2>
-        <p className="text-gray-600 mt-2">
+        <Calculator className="w-12 h-12 mx-auto mb-4 text-brand-orange" />
+        <h2 className="text-2xl md:text-3xl font-bold text-brand-black">Calculadora de CMV</h2>
+        <p className="text-gray-600 mt-2 font-arial">
           Descubra se sua pizzaria está perdendo dinheiro com um CMV alto
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="faturamento" className="text-sm font-medium">
+          <Label htmlFor="faturamento" className="text-sm font-medium text-brand-black">
             Faturamento total do último mês
           </Label>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-brand-orange" />
             <Input
               id="faturamento"
               type="number"
               placeholder="0,00"
-              className="pl-10"
+              className="pl-10 border-2 focus:border-brand-orange focus:ring-brand-orange"
               value={formData.faturamento || ""}
               onChange={(e) =>
                 setFormData({ ...formData, faturamento: Number(e.target.value) })
@@ -112,7 +112,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium">Inclui taxas de entrega?</Label>
+          <Label className="text-sm font-medium text-brand-black">Inclui taxas de entrega?</Label>
           <RadioGroup
             value={formData.inclui_taxas ? "yes" : "no"}
             onValueChange={(value) =>
@@ -121,11 +121,11 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             className="flex space-x-4"
           >
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="yes" id="yes" />
+              <RadioGroupItem value="yes" id="yes" className="text-brand-orange" />
               <Label htmlFor="yes">Sim</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="no" id="no" />
+              <RadioGroupItem value="no" id="no" className="text-brand-orange" />
               <Label htmlFor="no">Não</Label>
             </div>
           </RadioGroup>
@@ -138,16 +138,16 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             exit={{ opacity: 0, height: 0 }}
             className="space-y-2"
           >
-            <Label htmlFor="taxas" className="text-sm font-medium">
+            <Label htmlFor="taxas" className="text-sm font-medium text-brand-black">
               Total repassado em taxas
             </Label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+              <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-brand-orange" />
               <Input
                 id="taxas"
                 type="number"
                 placeholder="0,00"
-                className="pl-10"
+                className="pl-10 border-2 focus:border-brand-orange focus:ring-brand-orange"
                 value={formData.taxas_repassadas || ""}
                 onChange={(e) =>
                   setFormData({
@@ -161,16 +161,16 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="compras" className="text-sm font-medium">
+          <Label htmlFor="compras" className="text-sm font-medium text-brand-black">
             Total de compras do último mês
           </Label>
           <div className="relative">
-            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-brand-orange" />
             <Input
               id="compras"
               type="number"
               placeholder="0,00"
-              className="pl-10"
+              className="pl-10 border-2 focus:border-brand-orange focus:ring-brand-orange"
               value={formData.total_compras || ""}
               onChange={(e) =>
                 setFormData({ ...formData, total_compras: Number(e.target.value) })
@@ -181,7 +181,8 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
 
         <Button 
           onClick={handleCalculate} 
-          className="w-full h-12 mt-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all"
+          className="w-full h-12 mt-6 bg-brand-orange hover:bg-brand-orange/90 text-white font-axiforma
+                     shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
         >
           Calcular CMV
           <ArrowRight className="ml-2 h-5 w-5" />

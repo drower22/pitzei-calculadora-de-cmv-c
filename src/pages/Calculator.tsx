@@ -16,19 +16,27 @@ const Calculator = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 min-h-screen bg-gradient-to-br from-white to-orange-50">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="max-w-4xl mx-auto"
       >
+        <div className="flex justify-center mb-8">
+          <img 
+            src="/lovable-uploads/4f4bf946-023c-45f2-9a6c-7de97aae4f70.png" 
+            alt="Pitzei Logo" 
+            className="h-16 md:h-20 w-auto"
+          />
+        </div>
+        
         {!result ? (
-          <Card className="max-w-2xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-6">Calculadora de CMV</h2>
+          <Card className="p-6 md:p-8 shadow-lg bg-white/90 backdrop-blur-sm">
             <CalculatorForm onCalculate={handleCalculate} />
           </Card>
         ) : (
-          <div className="max-w-3xl mx-auto">
+          <div className="w-full">
             <ResultReport result={result} onBack={handleBack} />
           </div>
         )}
