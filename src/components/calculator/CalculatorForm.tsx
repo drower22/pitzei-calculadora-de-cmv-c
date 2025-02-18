@@ -1,10 +1,11 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
-import { Calculator, DollarSign, ArrowRight } from "lucide-react";
+import { Calculator, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface FormData {
@@ -33,6 +34,40 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
     taxas_repassadas: 0,
     total_compras: 0,
   });
+
+  const formatCurrency = (value: string) => {
+    // Remove todos os caracteres não numéricos
+    const numericValue = value.replace(/\D/g, "");
+    
+    // Converte para número e divide por 100 para considerar os centavos
+    const numberValue = Number(numericValue) / 100;
+    
+    // Formata o número para moeda brasileira
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(numberValue);
+  };
+
+  const parseCurrencyToNumber = (value: string): number => {
+    // Remove R$, espaços e pontos, troca vírgula por ponto
+    const numericString = value
+      .replace(/[R$\s.]/g, '')
+      .replace(',', '.');
+    return Number(numericString);
+  };
+
+  const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>, field: keyof FormData) => {
+    const formatted = formatCurrency(e.target.value);
+    const numericValue = parseCurrencyToNumber(formatted);
+    
+    setFormData(prev => ({
+      ...prev,
+      [field]: numericValue
+    }));
+    
+    e.target.value = formatted;
+  };
 
   const handleCalculate = () => {
     try {
@@ -96,23 +131,20 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
           <Label htmlFor="faturamento" className="text-sm font-medium text-brand-black">
             Faturamento total do último mês
           </Label>
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-brand-orange" />
-            <Input
-              id="faturamento"
-              type="number"
-              placeholder="0,00"
-              className="pl-10 border-2 focus:border-brand-orange focus:ring-brand-orange"
-              value={formData.faturamento || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, faturamento: Number(e.target.value) })
-              }
-            />
-          </div>
+          <Input
+            id="faturamento"
+            type="text"
+            placeholder="R$ 0,00"
+            className="border-2 focus:border-brand-orange focus:ring-brand-orange"
+            onChange={(e) => handleCurrencyInput(e, 'faturamento')}
+            value={formData.faturamento ? formatCurrency(formData.faturamento.toString()) : ''}
+          />
         </div>
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium text-brand-black">Inclui taxas de entrega?</Label>
+          <Label className="text-sm font-medium text-brand-black">
+            Nesse total estão inclusos taxas pagas diretamente aos entregadores?
+          </Label>
           <RadioGroup
             value={formData.inclui_taxas ? "yes" : "no"}
             onValueChange={(value) =>
@@ -141,22 +173,14 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             <Label htmlFor="taxas" className="text-sm font-medium text-brand-black">
               Total repassado em taxas
             </Label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-brand-orange" />
-              <Input
-                id="taxas"
-                type="number"
-                placeholder="0,00"
-                className="pl-10 border-2 focus:border-brand-orange focus:ring-brand-orange"
-                value={formData.taxas_repassadas || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    taxas_repassadas: Number(e.target.value),
-                  })
-                }
-              />
-            </div>
+            <Input
+              id="taxas"
+              type="text"
+              placeholder="R$ 0,00"
+              className="border-2 focus:border-brand-orange focus:ring-brand-orange"
+              onChange={(e) => handleCurrencyInput(e, 'taxas_repassadas')}
+              value={formData.taxas_repassadas ? formatCurrency(formData.taxas_repassadas.toString()) : ''}
+            />
           </motion.div>
         )}
 
@@ -164,19 +188,14 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
           <Label htmlFor="compras" className="text-sm font-medium text-brand-black">
             Total de compras do último mês
           </Label>
-          <div className="relative">
-            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-brand-orange" />
-            <Input
-              id="compras"
-              type="number"
-              placeholder="0,00"
-              className="pl-10 border-2 focus:border-brand-orange focus:ring-brand-orange"
-              value={formData.total_compras || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, total_compras: Number(e.target.value) })
-              }
-            />
-          </div>
+          <Input
+            id="compras"
+            type="text"
+            placeholder="R$ 0,00"
+            className="border-2 focus:border-brand-orange focus:ring-brand-orange"
+            onChange={(e) => handleCurrencyInput(e, 'total_compras')}
+            value={formData.total_compras ? formatCurrency(formData.total_compras.toString()) : ''}
+          />
         </div>
 
         <Button 
