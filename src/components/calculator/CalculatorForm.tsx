@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +38,11 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
     // Remove todos os caracteres não numéricos
     const numericValue = value.replace(/\D/g, "");
     
+    // Se não houver valor, retorna R$ 0,00
+    if (!numericValue) {
+      return "R$ 0,00";
+    }
+    
     // Converte para número e divide por 100 para considerar os centavos
     const numberValue = Number(numericValue) / 100;
     
@@ -70,45 +74,38 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   };
 
   const handleCalculate = () => {
-    try {
-      if (!formData.faturamento || !formData.total_compras) {
-        toast({
-          title: "Erro",
-          description: "Por favor, preencha todos os campos obrigatórios.",
-          variant: "destructive",
-        });
-        return;
-      }
+    // Remove a validação de !formData.faturamento e !formData.total_compras
+    // já que agora queremos permitir o valor zero
+    const faturamentoReal = formData.inclui_taxas
+      ? formData.faturamento - formData.taxas_repassadas
+      : formData.faturamento;
 
-      const faturamentoReal = formData.inclui_taxas
-        ? formData.faturamento - formData.taxas_repassadas
-        : formData.faturamento;
-
-      const cmv_valor = formData.total_compras;
-      const cmv_percentual = (formData.total_compras / faturamentoReal) * 100;
-      const lucro_perdido = cmv_percentual > 38 
-        ? ((cmv_percentual - 38) / 100) * faturamentoReal
-        : 0;
-
-      onCalculate({
-        cmv_valor,
-        cmv_percentual,
-        lucro_perdido,
-        faturamento_real: faturamentoReal
-      });
-
-      toast({
-        title: "Sucesso!",
-        description: "Cálculo realizado com sucesso.",
-      });
-    } catch (error) {
-      console.error("Error:", error);
+    if (faturamentoReal <= 0) {
       toast({
         title: "Erro",
-        description: "Ocorreu um erro ao realizar o cálculo.",
+        description: "O faturamento real não pode ser zero ou negativo.",
         variant: "destructive",
       });
+      return;
     }
+
+    const cmv_valor = formData.total_compras;
+    const cmv_percentual = (formData.total_compras / faturamentoReal) * 100;
+    const lucro_perdido = cmv_percentual > 38 
+      ? ((cmv_percentual - 38) / 100) * faturamentoReal
+      : 0;
+
+    onCalculate({
+      cmv_valor,
+      cmv_percentual,
+      lucro_perdido,
+      faturamento_real: faturamentoReal
+    });
+
+    toast({
+      title: "Sucesso!",
+      description: "Cálculo realizado com sucesso.",
+    });
   };
 
   return (
