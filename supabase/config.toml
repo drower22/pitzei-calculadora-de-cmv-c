@@ -1,1 +1,3 @@
-project_id = "kpxlwbuxqnxmawweoepf"
+
+[functions.send-cmv-report]
+verify_jwt = false
