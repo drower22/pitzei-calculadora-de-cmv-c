@@ -34,12 +34,19 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
     taxas_repassadas: 0,
     total_compras: 0,
   });
+  
+  // Mantém o valor original digitado pelo usuário
+  const [inputValues, setInputValues] = useState({
+    faturamento: "",
+    taxas_repassadas: "",
+    total_compras: ""
+  });
 
   const formatCurrency = (value: string) => {
     // Remove tudo que não é número
     const numericValue = value.replace(/\D/g, "");
     
-    // Se não houver valor, retorna vazio (não R$ 0,00)
+    // Se não houver valor, retorna vazio
     if (!numericValue) {
       return "";
     }
@@ -61,20 +68,26 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   };
 
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>, field: keyof FormData) => {
-    const formatted = formatCurrency(e.target.value);
+    const rawValue = e.target.value;
+    const formatted = formatCurrency(rawValue);
     const numericValue = parseCurrencyToNumber(formatted);
     
+    // Atualiza o valor do input
+    setInputValues(prev => ({
+      ...prev,
+      [field]: formatted || ""
+    }));
+    
+    // Atualiza o valor numérico para cálculos
     setFormData(prev => ({
       ...prev,
       [field]: numericValue
     }));
-    
-    e.target.value = formatted;
   };
 
   const handleCalculate = () => {
-    // Validar campos zerados
-    if (formData.faturamento <= 0) {
+    // Validação de campos zerados
+    if (!inputValues.faturamento || formData.faturamento <= 0) {
       toast({
         title: "Erro",
         description: "O faturamento não pode ser zero.",
@@ -83,10 +96,19 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
       return;
     }
 
-    if (formData.total_compras <= 0) {
+    if (!inputValues.total_compras || formData.total_compras <= 0) {
       toast({
         title: "Erro",
         description: "O total de compras não pode ser zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.inclui_taxas && (!inputValues.taxas_repassadas || formData.taxas_repassadas <= 0)) {
+      toast({
+        title: "Erro",
+        description: "O total de taxas não pode ser zero quando marcado como incluso.",
         variant: "destructive",
       });
       return;
@@ -141,7 +163,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             placeholder="R$ 0,00"
             className="border-2 focus:border-brand-orange focus:ring-brand-orange"
             onChange={(e) => handleCurrencyInput(e, 'faturamento')}
-            value={formatCurrency(formData.faturamento.toString())}
+            value={inputValues.faturamento}
           />
         </div>
 
@@ -183,7 +205,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
               placeholder="R$ 0,00"
               className="border-2 focus:border-brand-orange focus:ring-brand-orange"
               onChange={(e) => handleCurrencyInput(e, 'taxas_repassadas')}
-              value={formatCurrency(formData.taxas_repassadas.toString())}
+              value={inputValues.taxas_repassadas}
             />
           </motion.div>
         )}
@@ -198,7 +220,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             placeholder="R$ 0,00"
             className="border-2 focus:border-brand-orange focus:ring-brand-orange"
             onChange={(e) => handleCurrencyInput(e, 'total_compras')}
-            value={formatCurrency(formData.total_compras.toString())}
+            value={inputValues.total_compras}
           />
         </div>
 
