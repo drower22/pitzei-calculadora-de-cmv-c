@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -5,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Dialog,
   DialogContent,
@@ -124,7 +131,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
             <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
               <PieChart className="w-6 h-6 text-green-500 mb-2" />
-              <p className="text-sm text-gray-600">CMV em Valor</p>
+              <p className="text-sm text-gray-600">Compras</p>
               <p className="text-lg font-semibold">
                 {formatCurrency(result.cmv_valor)}
               </p>
@@ -148,23 +155,27 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
           </div>
 
           <div className="space-y-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold mb-2">Análise</h4>
-              <p className="text-sm">
-                O CMV (Custo da Mercadoria Vendida) ideal para o setor é de 38%. 
-                {result.cmv_percentual > 38 ? (
-                  ` Seu CMV está ${(result.cmv_percentual - 38).toFixed(1)}% acima do ideal, 
-                  resultando em uma perda de ${formatCurrency(result.lucro_perdido)} em lucro potencial todos os meses.`
-                ) : (
-                  " Parabéns! Seu CMV está dentro ou abaixo do ideal para o setor."
-                )}
-              </p>
-            </div>
+            <Accordion type="single" collapsible>
+              <AccordionItem value="calculation">
+                <AccordionTrigger className="text-brand-orange hover:text-brand-orange/90">
+                  Como o CMV é calculado?
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    O CMV (Custo da Mercadoria Vendida) é calculado dividindo o total de compras pelo faturamento real e multiplicando por 100 para obter a porcentagem.
+                    <br /><br />
+                    Fórmula: CMV = (Total de Compras ÷ Faturamento Real) × 100
+                    <br /><br />
+                    Para o setor de pizzarias, um CMV saudável deve estar em torno de 38%. Valores acima disso indicam que sua operação pode estar perdendo lucratividade.
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
 
           <Button 
             onClick={() => setEmailOpen(true)} 
-            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all"
+            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white shadow-lg hover:shadow-xl transition-all"
           >
             <Mail className="w-4 h-4 mr-2" />
             Quero receber o resultado
@@ -189,7 +200,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
             />
             <Button 
               onClick={handleSendEmail} 
-              className="w-full"
+              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white"
               disabled={sending}
             >
               {sending ? "Enviando..." : "Enviar Relatório"}
