@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,18 +36,8 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   });
 
   const formatCurrency = (value: string) => {
-    // Remove todos os caracteres não numéricos
     const numericValue = value.replace(/\D/g, "");
-    
-    // Se não houver valor, retorna R$ 0,00
-    if (!numericValue) {
-      return "R$ 0,00";
-    }
-    
-    // Converte para número e divide por 100 para considerar os centavos
     const numberValue = Number(numericValue) / 100;
-    
-    // Formata o número para moeda brasileira
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
@@ -54,11 +45,10 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   };
 
   const parseCurrencyToNumber = (value: string): number => {
-    // Remove R$, espaços e pontos, troca vírgula por ponto
     const numericString = value
       .replace(/[R$\s.]/g, '')
       .replace(',', '.');
-    return Number(numericString);
+    return parseFloat(numericString) || 0; // Retorna 0 se o valor for NaN
   };
 
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>, field: keyof FormData) => {
@@ -74,23 +64,14 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   };
 
   const handleCalculate = () => {
-    // Remove a validação de !formData.faturamento e !formData.total_compras
-    // já que agora queremos permitir o valor zero
     const faturamentoReal = formData.inclui_taxas
       ? formData.faturamento - formData.taxas_repassadas
       : formData.faturamento;
 
-    if (faturamentoReal <= 0) {
-      toast({
-        title: "Erro",
-        description: "O faturamento real não pode ser zero ou negativo.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     const cmv_valor = formData.total_compras;
-    const cmv_percentual = (formData.total_compras / faturamentoReal) * 100;
+    const cmv_percentual = faturamentoReal > 0 
+      ? (formData.total_compras / faturamentoReal) * 100 
+      : 0;
     const lucro_perdido = cmv_percentual > 38 
       ? ((cmv_percentual - 38) / 100) * faturamentoReal
       : 0;
@@ -134,7 +115,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             placeholder="R$ 0,00"
             className="border-2 focus:border-brand-orange focus:ring-brand-orange"
             onChange={(e) => handleCurrencyInput(e, 'faturamento')}
-            value={formData.faturamento ? formatCurrency(formData.faturamento.toString()) : ''}
+            value={formData.faturamento === 0 ? "" : formatCurrency(formData.faturamento.toString())}
           />
         </div>
 
@@ -176,7 +157,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
               placeholder="R$ 0,00"
               className="border-2 focus:border-brand-orange focus:ring-brand-orange"
               onChange={(e) => handleCurrencyInput(e, 'taxas_repassadas')}
-              value={formData.taxas_repassadas ? formatCurrency(formData.taxas_repassadas.toString()) : ''}
+              value={formData.taxas_repassadas === 0 ? "" : formatCurrency(formData.taxas_repassadas.toString())}
             />
           </motion.div>
         )}
@@ -191,7 +172,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             placeholder="R$ 0,00"
             className="border-2 focus:border-brand-orange focus:ring-brand-orange"
             onChange={(e) => handleCurrencyInput(e, 'total_compras')}
-            value={formData.total_compras ? formatCurrency(formData.total_compras.toString()) : ''}
+            value={formData.total_compras === 0 ? "" : formatCurrency(formData.total_compras.toString())}
           />
         </div>
 

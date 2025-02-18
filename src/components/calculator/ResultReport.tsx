@@ -64,6 +64,16 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
     setSending(true);
     try {
+      console.log("Sending email request with data:", {
+        to: email,
+        result: {
+          faturamento_real: result.faturamento_real,
+          cmv_valor: result.cmv_valor,
+          cmv_percentual: result.cmv_percentual,
+          lucro_perdido: result.lucro_perdido,
+        },
+      });
+
       const { error } = await supabase.functions.invoke('send-cmv-report', {
         body: {
           to: email,
@@ -76,19 +86,17 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
         },
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       toast({
         title: "Sucesso!",
         description: "O relatório foi enviado para seu email.",
       });
       setEmailOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending email:", error);
       toast({
-        title: "Erro",
+        title: "Erro no envio",
         description: "Não foi possível enviar o email. Tente novamente.",
         variant: "destructive",
       });
