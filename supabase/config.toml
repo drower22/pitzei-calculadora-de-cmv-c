@@ -1,3 +1,4 @@
 
+[functions]
 [functions.send-cmv-report]
 verify_jwt = false
