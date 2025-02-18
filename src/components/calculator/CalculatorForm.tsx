@@ -36,8 +36,17 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   });
 
   const formatCurrency = (value: string) => {
+    // Remove tudo que não é número
     const numericValue = value.replace(/\D/g, "");
+    
+    // Se não houver valor, retorna vazio (não R$ 0,00)
+    if (!numericValue) {
+      return "";
+    }
+    
+    // Converte para número e divide por 100 para considerar os centavos
     const numberValue = Number(numericValue) / 100;
+    
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
@@ -48,7 +57,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
     const numericString = value
       .replace(/[R$\s.]/g, '')
       .replace(',', '.');
-    return parseFloat(numericString) || 0; // Retorna 0 se o valor for NaN
+    return parseFloat(numericString) || 0;
   };
 
   const handleCurrencyInput = (e: React.ChangeEvent<HTMLInputElement>, field: keyof FormData) => {
@@ -64,14 +73,31 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   };
 
   const handleCalculate = () => {
+    // Validar campos zerados
+    if (formData.faturamento <= 0) {
+      toast({
+        title: "Erro",
+        description: "O faturamento não pode ser zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.total_compras <= 0) {
+      toast({
+        title: "Erro",
+        description: "O total de compras não pode ser zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const faturamentoReal = formData.inclui_taxas
       ? formData.faturamento - formData.taxas_repassadas
       : formData.faturamento;
 
     const cmv_valor = formData.total_compras;
-    const cmv_percentual = faturamentoReal > 0 
-      ? (formData.total_compras / faturamentoReal) * 100 
-      : 0;
+    const cmv_percentual = (formData.total_compras / faturamentoReal) * 100;
     const lucro_perdido = cmv_percentual > 38 
       ? ((cmv_percentual - 38) / 100) * faturamentoReal
       : 0;
@@ -115,7 +141,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             placeholder="R$ 0,00"
             className="border-2 focus:border-brand-orange focus:ring-brand-orange"
             onChange={(e) => handleCurrencyInput(e, 'faturamento')}
-            value={formData.faturamento === 0 ? "" : formatCurrency(formData.faturamento.toString())}
+            value={formatCurrency(formData.faturamento.toString())}
           />
         </div>
 
@@ -157,7 +183,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
               placeholder="R$ 0,00"
               className="border-2 focus:border-brand-orange focus:ring-brand-orange"
               onChange={(e) => handleCurrencyInput(e, 'taxas_repassadas')}
-              value={formData.taxas_repassadas === 0 ? "" : formatCurrency(formData.taxas_repassadas.toString())}
+              value={formatCurrency(formData.taxas_repassadas.toString())}
             />
           </motion.div>
         )}
@@ -172,7 +198,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
             placeholder="R$ 0,00"
             className="border-2 focus:border-brand-orange focus:ring-brand-orange"
             onChange={(e) => handleCurrencyInput(e, 'total_compras')}
-            value={formData.total_compras === 0 ? "" : formatCurrency(formData.total_compras.toString())}
+            value={formatCurrency(formData.total_compras.toString())}
           />
         </div>
 
