@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -57,6 +58,23 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
     setSending(true);
     try {
+      // Primeiro, salvar os dados no Supabase
+      const { error: dbError } = await supabase
+        .from('calculadora_cmv')
+        .insert({
+          user_email: email,
+          faturamento_real: result.faturamento_real,
+          cmv_valor: result.cmv_valor,
+          cmv_percentual: result.cmv_percentual,
+          lucro_perdido: result.lucro_perdido
+        });
+
+      if (dbError) {
+        console.error('Erro ao salvar no banco:', dbError);
+        throw dbError;
+      }
+
+      // Depois, enviar o email
       const requestData = {
         to: email,
         name: name,
@@ -80,10 +98,10 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       });
       setEmailOpen(false);
     } catch (error: any) {
-      console.error("Error sending email:", error);
+      console.error("Error:", error);
       toast({
         title: "Erro no envio",
-        description: "Não foi possível enviar o email. Tente novamente.",
+        description: "Não foi possível processar sua solicitação. Tente novamente.",
         variant: "destructive",
       });
     } finally {
