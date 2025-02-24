@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -126,6 +125,11 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
         description: "Confira seu email para ver o resultado completo.",
       });
       setEmailOpen(false);
+      
+      // Aguarda um pequeno delay para o usuário ver o toast antes do redirecionamento
+      setTimeout(() => {
+        onBack(); // Redireciona para a tela inicial
+      }, 1500);
     } catch (error: any) {
       console.error("Erro detalhado na operação:", {
         name: error.name,
