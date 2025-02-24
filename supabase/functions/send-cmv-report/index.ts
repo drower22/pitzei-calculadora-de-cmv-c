@@ -1,6 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.7';
 import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
@@ -9,23 +8,18 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-// Simplified initialization
 console.log("Function starting...");
 
 try {
-  console.log("Initializing Resend...");
-  const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-  console.log("Resend initialized successfully");
+  // Log the API key status (without exposing it)
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  console.log("API Key status:", apiKey ? "Present" : "Missing");
+  console.log("API Key length:", apiKey?.length);
 
-  console.log("Initializing Supabase client...");
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-  );
-  console.log("Supabase client initialized");
+  const resend = new Resend(apiKey);
 
   const handler = async (req: Request): Promise<Response> => {
-    console.log("New request received");
+    console.log("New request received:", req.method);
 
     // Handle CORS
     if (req.method === "OPTIONS") {
@@ -34,19 +28,24 @@ try {
 
     try {
       const body = await req.json();
-      console.log("Request body:", JSON.stringify(body, null, 2));
+      console.log("Attempting to send email to:", body.to);
 
+      // Test with a simpler email first
       const emailResponse = await resend.emails.send({
-        from: "Calculadora CMV <onboarding@resend.dev>",
+        from: "Calculadora <sent@resend.dev>",
         to: [body.to],
-        subject: "Teste - Relatório de CMV",
-        html: "<p>Teste de envio de email</p>"
+        subject: "Teste de Envio",
+        html: "<p>Este é um teste de envio de email.</p>"
       });
 
-      console.log("Email response:", JSON.stringify(emailResponse, null, 2));
+      console.log("Raw email response:", emailResponse);
+
+      if (emailResponse.error) {
+        throw new Error(`Resend API Error: ${JSON.stringify(emailResponse.error)}`);
+      }
 
       return new Response(
-        JSON.stringify({ success: true, emailResponse }),
+        JSON.stringify({ success: true, data: emailResponse }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
           status: 200,
@@ -54,17 +53,16 @@ try {
       );
 
     } catch (error) {
-      console.error("Handler error:", {
+      console.error("Detailed error:", {
         name: error.name,
         message: error.message,
-        stack: error.stack
+        stack: error.stack,
       });
 
       return new Response(
         JSON.stringify({
           error: error.message,
-          name: error.name,
-          stack: error.stack
+          details: error.stack
         }),
         {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -83,9 +81,8 @@ try {
     stack: error.stack
   });
   
-  // Provide a basic handler for when initialization fails
   serve(() => new Response(
-    JSON.stringify({ error: "Service initialization failed" }),
+    JSON.stringify({ error: "Service initialization failed", details: error.message }),
     {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
