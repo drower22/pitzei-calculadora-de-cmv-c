@@ -58,8 +58,14 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
     setSending(true);
     try {
+      console.log('Iniciando salvamento no Supabase...', {
+        url: supabase.config.supabaseUrl,
+        email,
+        result
+      });
+
       // Primeiro, salvar os dados no Supabase
-      const { error: dbError } = await supabase
+      const { data: savedData, error: dbError } = await supabase
         .from('calculadora_cmv')
         .insert({
           user_email: email,
@@ -67,14 +73,24 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
           cmv_valor: result.cmv_valor,
           cmv_percentual: result.cmv_percentual,
           lucro_perdido: result.lucro_perdido
-        });
+        })
+        .select()
+        .single();
 
       if (dbError) {
-        console.error('Erro ao salvar no banco:', dbError);
+        console.error('Erro detalhado ao salvar no banco:', {
+          code: dbError.code,
+          message: dbError.message,
+          details: dbError.details,
+          hint: dbError.hint
+        });
         throw dbError;
       }
 
+      console.log('Dados salvos com sucesso:', savedData);
+
       // Depois, enviar o email
+      console.log('Iniciando envio de email...');
       const requestData = {
         to: email,
         name: name,
@@ -86,11 +102,20 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
         },
       };
 
-      const { data, error } = await supabase.functions.invoke('send-cmv-report', {
+      const { data: emailResponse, error: emailError } = await supabase.functions.invoke('send-cmv-report', {
         body: requestData
       });
 
-      if (error) throw error;
+      if (emailError) {
+        console.error('Erro detalhado ao enviar email:', {
+          message: emailError.message,
+          name: emailError.name,
+          context: emailError
+        });
+        throw emailError;
+      }
+
+      console.log('Email enviado com sucesso:', emailResponse);
 
       toast({
         title: `${name}, seu relatório foi enviado!`,
@@ -98,10 +123,16 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       });
       setEmailOpen(false);
     } catch (error: any) {
-      console.error("Error:", error);
+      console.error("Erro detalhado na operação:", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        context: error
+      });
+      
       toast({
-        title: "Erro no envio",
-        description: "Não foi possível processar sua solicitação. Tente novamente.",
+        title: "Erro no processamento",
+        description: error.message || "Não foi possível processar sua solicitação. Tente novamente.",
         variant: "destructive",
       });
     } finally {
