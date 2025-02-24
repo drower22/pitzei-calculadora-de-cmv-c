@@ -194,7 +194,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
               className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white"
               disabled={sending}
             >
-              {sending ? "Enviando..." : "Ver resultado completo"}
+              {sending ? "Enviando..." : "Receber resultado"}
             </Button>
           </div>
         </DialogContent>
