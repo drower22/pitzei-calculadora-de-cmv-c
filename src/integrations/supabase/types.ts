@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      calculadora_cmv: {
+        Row: {
+          cmv_percentual: number
+          cmv_valor: number
+          created_at: string
+          faturamento_real: number
+          id: string
+          lucro_perdido: number
+          updated_at: string
+          user_email: string
+        }
+        Insert: {
+          cmv_percentual: number
+          cmv_valor: number
+          created_at?: string
+          faturamento_real: number
+          id?: string
+          lucro_perdido: number
+          updated_at?: string
+          user_email: string
+        }
+        Update: {
+          cmv_percentual?: number
+          cmv_valor?: number
+          created_at?: string
+          faturamento_real?: number
+          id?: string
+          lucro_perdido?: number
+          updated_at?: string
+          user_email?: string
+        }
+        Relationships: []
+      }
       categorias_insumos: {
         Row: {
           contabiliza_cmv: boolean
