@@ -171,9 +171,9 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Veja seu resultado completo</DialogTitle>
+            <DialogTitle>Receba sua análise completa</DialogTitle>
             <DialogDescription>
-              Preencha os campos abaixo para receber uma análise detalhada do seu CMV.
+              Preencha os campos abaixo para receber seu relatório detalhado.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
