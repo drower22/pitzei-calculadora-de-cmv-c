@@ -144,14 +144,14 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-600">CMV Percentual</p>
-                <p className="text-lg font-semibold">
+                <p className={`text-lg font-semibold ${!isCMVHealthy ? 'blur-[4px]' : ''}`}>
                   {result.cmv_percentual.toFixed(2)}%
                 </p>
               </div>
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-600">Lucro Perdido Mensal</p>
-                <p className={`text-lg font-semibold ${!isCMVHealthy ? 'text-red-500' : 'text-green-500'}`}>
+                <p className={`text-lg font-semibold ${!isCMVHealthy ? 'blur-[4px] text-red-500' : 'text-green-500'}`}>
                   {formatCurrency(result.lucro_perdido)}
                 </p>
               </div>

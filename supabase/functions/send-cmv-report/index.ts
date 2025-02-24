@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
@@ -42,9 +41,7 @@ try {
       console.log("Result data:", result);
 
       const isCMVHealthy = result.cmv_percentual <= 38;
-      const subject = isCMVHealthy 
-        ? "Parabéns! Sua Pizzaria está no caminho certo 🎉 | PITZEI"
-        : "Atenção! Sua Pizzaria pode estar perdendo lucro 🚨 | PITZEI";
+      const subject = "Resultado CMV da sua Pizzaria | PITZEI";
 
       const whatsappLink = "https://wa.me/5541985249106?text=" + encodeURIComponent("Olá. Quero saber como fazer para minha pizzaria lucrar mais todos os meses.");
 
@@ -88,7 +85,7 @@ try {
               <p style="font-size: 18px;">
                 ${isCMVHealthy 
                   ? 'Sua pizzaria está com um CMV saudável. Continue com o ótimo trabalho!' 
-                  : `Sua pizzaria está deixando de lucrar <strong>${formatCurrency(result.lucro_perdido)}</strong> por mês!`}
+                  : `Sua pizzaria pode estar deixando de lucrar até <strong>${formatCurrency(result.lucro_perdido)}</strong> por mês!`}
               </p>
             </div>
 
