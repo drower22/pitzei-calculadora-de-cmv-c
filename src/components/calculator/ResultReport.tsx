@@ -35,6 +35,12 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
     }).format(value);
   };
 
+  // Gera asteriscos baseado no número de dígitos do valor
+  const getAsterisks = (value: number) => {
+    const numDigits = Math.floor(value).toString().length;
+    return "*".repeat(numDigits);
+  };
+
   const handleSendEmail = async () => {
     if (!email || !name) {
       toast({
@@ -96,7 +102,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
                 <h2 className="text-lg font-semibold text-red-500">Atenção!</h2>
               </div>
               <p className="text-red-600 font-medium">
-                Sua pizzaria está deixando de lucrar {formatCurrency(result.lucro_perdido)} por mês!
+                Sua pizzaria pode estar deixando de lucrar até R$ {getAsterisks(result.lucro_perdido)} por mês!
               </p>
             </div>
 
@@ -104,7 +110,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <DollarSign className="w-6 h-6 text-blue-500 mb-2" />
                 <p className="text-sm text-gray-600">Faturamento Real</p>
-                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                <p className="text-lg font-semibold">
                   {formatCurrency(result.faturamento_real)}
                 </p>
               </div>
@@ -112,21 +118,21 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <PieChart className="w-6 h-6 text-green-500 mb-2" />
                 <p className="text-sm text-gray-600">Compras (CMV)</p>
-                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                <p className="text-lg font-semibold">
                   {formatCurrency(result.cmv_valor)}
                 </p>
               </div>
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-600">CMV Percentual</p>
-                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                <p className="text-lg font-semibold blur-[4px]">
                   {result.cmv_percentual.toFixed(2)}%
                 </p>
               </div>
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-600">Lucro Perdido Mensal</p>
-                <p className="text-lg font-semibold text-red-500 blur-sm hover:blur-none transition-all">
+                <p className="text-lg font-semibold text-red-500 blur-[4px]">
                   {formatCurrency(result.lucro_perdido)}
                 </p>
               </div>
