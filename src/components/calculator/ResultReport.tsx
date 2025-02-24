@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { DollarSign, PieChart } from "lucide-react";
+import { DollarSign, PieChart, AlertCircle } from "lucide-react";
 import type { CalculationResult } from "./CalculatorForm";
 
 interface ResultReportProps {
@@ -27,22 +27,6 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [sending, setSending] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.innerHeight + window.scrollY;
-      const documentHeight = document.documentElement.scrollHeight;
-      
-      if (scrollPosition >= documentHeight - 100 && !hasScrolled) {
-        setHasScrolled(true);
-        setEmailOpen(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [hasScrolled]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -102,24 +86,58 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
+        className="space-y-6"
       >
-        <Card className="p-6 space-y-6 bg-gradient-to-br from-white to-gray-50">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <DollarSign className="w-6 h-6 text-blue-500 mb-2" />
-              <p className="text-sm text-gray-600">Faturamento Real</p>
-              <p className="text-lg font-semibold">
-                {formatCurrency(result.faturamento_real)}
+        <Card className="p-6 bg-gradient-to-br from-white to-gray-50">
+          <div className="space-y-6">
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertCircle className="w-5 h-5 text-red-500" />
+                <h2 className="text-lg font-semibold text-red-500">Atenção!</h2>
+              </div>
+              <p className="text-red-600 font-medium">
+                Sua pizzaria está deixando de lucrar {formatCurrency(result.lucro_perdido)} por mês!
               </p>
             </div>
 
-            <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <PieChart className="w-6 h-6 text-green-500 mb-2" />
-              <p className="text-sm text-gray-600">Compras</p>
-              <p className="text-lg font-semibold">
-                {formatCurrency(result.cmv_valor)}
-              </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                <DollarSign className="w-6 h-6 text-blue-500 mb-2" />
+                <p className="text-sm text-gray-600">Faturamento Real</p>
+                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                  {formatCurrency(result.faturamento_real)}
+                </p>
+              </div>
+
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                <PieChart className="w-6 h-6 text-green-500 mb-2" />
+                <p className="text-sm text-gray-600">Compras (CMV)</p>
+                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                  {formatCurrency(result.cmv_valor)}
+                </p>
+              </div>
+
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                <p className="text-sm text-gray-600">CMV Percentual</p>
+                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                  {result.cmv_percentual.toFixed(2)}%
+                </p>
+              </div>
+
+              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                <p className="text-sm text-gray-600">Lucro Perdido Mensal</p>
+                <p className="text-lg font-semibold text-red-500 blur-sm hover:blur-none transition-all">
+                  {formatCurrency(result.lucro_perdido)}
+                </p>
+              </div>
             </div>
+
+            <Button
+              onClick={() => setEmailOpen(true)}
+              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white mt-6"
+            >
+              Ver resultado completo
+            </Button>
           </div>
         </Card>
       </motion.div>
