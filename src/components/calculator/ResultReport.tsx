@@ -59,6 +59,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
     try {
       const requestData = {
         to: email,
+        name: name,
         result: {
           faturamento_real: result.faturamento_real,
           cmv_valor: result.cmv_valor,
