@@ -39,6 +39,7 @@ try {
     try {
       const { to, result } = await req.json();
       console.log("Sending report to:", to);
+      console.log("Result data:", result); // Added log to debug data
 
       const cmvStatus = getStatusMessage(result.cmv_percentual);
       const emailHtml = `
