@@ -18,6 +18,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/calculadora" replace />} />
             <Route path="/calculadora" element={<Calculator />} />
+            <Route path="*" element={<Navigate to="/calculadora" replace />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
