@@ -39,7 +39,7 @@ try {
     try {
       const { to, result } = await req.json();
       console.log("Sending report to:", to);
-      console.log("Result data:", result); // Added log to debug data
+      console.log("Result data:", result);
 
       const cmvStatus = getStatusMessage(result.cmv_percentual);
       const emailHtml = `
@@ -100,7 +100,7 @@ try {
       `;
 
       const emailResponse = await resend.emails.send({
-        from: "Calculadora CMV <sent@resend.dev>",
+        from: "Calculadora CMV <cmv@pitzei.com.br>",
         to: [to],
         subject: "Relatório de CMV - Análise de Lucratividade",
         html: emailHtml
