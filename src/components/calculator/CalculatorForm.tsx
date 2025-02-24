@@ -15,7 +15,7 @@ import {
 
 interface FormData {
   faturamento: number;
-  inclui_taxas: boolean;
+  inclui_taxas: boolean | null;
   taxas_repassadas: number;
   total_compras: number;
 }
@@ -35,7 +35,7 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     faturamento: 0,
-    inclui_taxas: false,
+    inclui_taxas: null as unknown as boolean,
     taxas_repassadas: 0,
     total_compras: 0,
   });
@@ -84,17 +84,17 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   const handleCalculate = () => {
     if (!inputValues.faturamento || formData.faturamento <= 0) {
       toast({
-        title: "Erro",
-        description: "O faturamento não pode ser zero.",
+        title: "Campo obrigatório",
+        description: "Informe o faturamento total do último mês",
         variant: "destructive",
       });
       return;
     }
 
-    if (!inputValues.total_compras || formData.total_compras <= 0) {
+    if (formData.inclui_taxas === null) {
       toast({
-        title: "Erro",
-        description: "O total de compras não pode ser zero.",
+        title: "Campo obrigatório",
+        description: "Informe se o faturamento inclui taxas de entregadores",
         variant: "destructive",
       });
       return;
@@ -102,8 +102,17 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
 
     if (formData.inclui_taxas && (!inputValues.taxas_repassadas || formData.taxas_repassadas <= 0)) {
       toast({
-        title: "Erro",
-        description: "O total de taxas não pode ser zero quando marcado como incluso.",
+        title: "Campo obrigatório",
+        description: "Informe o valor total repassado em taxas",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!inputValues.total_compras || formData.total_compras <= 0) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Informe o total de compras do último mês",
         variant: "destructive",
       });
       return;
@@ -124,11 +133,6 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
       cmv_percentual,
       lucro_perdido,
       faturamento_real: faturamentoReal
-    });
-
-    toast({
-      title: "Sucesso!",
-      description: "Cálculo realizado com sucesso.",
     });
   };
 
@@ -181,10 +185,10 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
 
         <div className="space-y-2">
           <Label className="text-sm font-medium text-brand-black">
-            Nesse total estão inclusos taxas pagas diretamente aos entregadores?
+            Nesse total estão inclusos taxas pagas diretamente aos entregadores?*
           </Label>
           <RadioGroup
-            value={formData.inclui_taxas ? "yes" : "no"}
+            value={formData.inclui_taxas === null ? undefined : formData.inclui_taxas ? "yes" : "no"}
             onValueChange={(value) =>
               setFormData({ ...formData, inclui_taxas: value === "yes" })
             }
@@ -236,14 +240,16 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
           />
         </div>
 
-        <Button 
-          onClick={handleCalculate} 
-          className="w-full h-12 mt-6 bg-brand-orange hover:bg-brand-orange/90 text-white font-axiforma
-                     shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
-        >
-          Calcular CMV
-          <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
+        <div className="flex justify-center">
+          <Button 
+            onClick={handleCalculate} 
+            className="w-full md:w-1/2 h-12 mt-6 bg-brand-orange hover:bg-brand-orange/90 text-white font-axiforma
+                      shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg"
+          >
+            Calcular CMV
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
       </div>
     </motion.div>
   );
