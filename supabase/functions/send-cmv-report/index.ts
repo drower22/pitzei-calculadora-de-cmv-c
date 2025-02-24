@@ -33,7 +33,7 @@ serve(async (req) => {
     };
 
     const data = await resend.emails.send({
-      from: "Calculadora de CMV <onboarding@resend.dev>",
+      from: "Calculadora CMV <calculadora@pitzei.com.br>",
       to: [to],
       subject: "Relatório de CMV da sua Pizzaria",
       html: `
@@ -60,8 +60,16 @@ serve(async (req) => {
           </div>
           
           <p style="color: #666; font-size: 14px;">
-            Este relatório foi gerado pela Calculadora de CMV exclusiva para pizzarias.
+            Este relatório foi gerado pela Calculadora de CMV da Pitzei.
           </p>
+
+          <div style="text-align: center; margin-top: 30px;">
+            <p style="color: #666;">
+              Pitzei - Tecnologia para Pizzarias
+              <br />
+              <a href="https://pitzei.com.br" style="color: #FF6B00; text-decoration: none;">pitzei.com.br</a>
+            </p>
+          </div>
         </div>
       `,
     });
