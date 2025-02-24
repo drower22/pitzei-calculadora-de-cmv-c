@@ -90,53 +90,54 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       >
         <Card className="p-6 bg-gradient-to-br from-white to-gray-50">
           <div className="space-y-6">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="w-5 h-5 text-red-500" />
-                <h2 className="text-lg font-semibold text-red-500">Atenção!</h2>
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.02, 1],
+                boxShadow: [
+                  "0 0 0 rgba(239, 68, 68, 0)",
+                  "0 0 20px rgba(239, 68, 68, 0.3)",
+                  "0 0 0 rgba(239, 68, 68, 0)"
+                ]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+              className="p-6 bg-red-50 border-2 border-red-300 rounded-lg"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <AlertCircle className="w-6 h-6 text-red-500" />
+                <h2 className="text-xl font-bold text-red-500">Atenção!</h2>
               </div>
-              <p className="text-red-600 font-medium">
-                Sua pizzaria está deixando de lucrar {formatCurrency(result.lucro_perdido)} por mês!
+              <p className="text-red-600 font-medium text-lg">
+                Sua pizzaria está deixando de lucrar R$ ***** por mês!
               </p>
-            </div>
+            </motion.div>
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <DollarSign className="w-6 h-6 text-blue-500 mb-2" />
                 <p className="text-sm text-gray-600">Faturamento Real</p>
-                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                <p className="text-lg font-semibold">
                   {formatCurrency(result.faturamento_real)}
                 </p>
               </div>
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <PieChart className="w-6 h-6 text-green-500 mb-2" />
-                <p className="text-sm text-gray-600">Compras (CMV)</p>
-                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
+                <p className="text-sm text-gray-600">Compras</p>
+                <p className="text-lg font-semibold">
                   {formatCurrency(result.cmv_valor)}
-                </p>
-              </div>
-
-              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-                <p className="text-sm text-gray-600">CMV Percentual</p>
-                <p className="text-lg font-semibold blur-sm hover:blur-none transition-all">
-                  {result.cmv_percentual.toFixed(2)}%
-                </p>
-              </div>
-
-              <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-                <p className="text-sm text-gray-600">Lucro Perdido Mensal</p>
-                <p className="text-lg font-semibold text-red-500 blur-sm hover:blur-none transition-all">
-                  {formatCurrency(result.lucro_perdido)}
                 </p>
               </div>
             </div>
 
             <Button
               onClick={() => setEmailOpen(true)}
-              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white mt-6"
+              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white mt-6 py-6 text-lg"
             >
-              Ver resultado completo
+              Quero receber o resultado completo
             </Button>
           </div>
         </Card>
@@ -145,9 +146,14 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Veja seu resultado completo</DialogTitle>
+            <DialogTitle className="text-xl">Receba o resultado completo</DialogTitle>
             <DialogDescription>
-              Preencha os campos abaixo para receber uma análise detalhada do seu CMV.
+              Você receberá uma análise detalhada do CMV da sua pizzaria, incluindo:
+              <ul className="mt-2 space-y-1 list-disc list-inside">
+                <li>Percentual exato do seu CMV</li>
+                <li>Quanto está deixando de lucrar</li>
+                <li>Recomendações personalizadas</li>
+              </ul>
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
@@ -165,10 +171,10 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
             />
             <Button 
               onClick={handleSendEmail} 
-              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white"
+              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white py-6 text-lg"
               disabled={sending}
             >
-              {sending ? "Enviando..." : "Ver resultado completo"}
+              {sending ? "Enviando..." : "Quero receber o resultado"}
             </Button>
           </div>
         </DialogContent>
