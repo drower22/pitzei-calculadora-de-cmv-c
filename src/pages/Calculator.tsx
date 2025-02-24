@@ -1,11 +1,14 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { CalculatorForm, type CalculationResult } from "@/components/calculator/CalculatorForm";
 import { ResultReport } from "@/components/calculator/ResultReport";
+import { useNavigate } from "react-router-dom";
 
 const Calculator = () => {
   const [result, setResult] = useState<CalculationResult | null>(null);
+  const navigate = useNavigate();
 
   const handleCalculate = (calculationResult: CalculationResult) => {
     setResult(calculationResult);
@@ -13,6 +16,7 @@ const Calculator = () => {
 
   const handleBack = () => {
     setResult(null);
+    navigate("/");
   };
 
   return (
