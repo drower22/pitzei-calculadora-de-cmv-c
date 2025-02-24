@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { Calculator, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface FormData {
   faturamento: number;
@@ -35,7 +40,6 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
     total_compras: 0,
   });
   
-  // Mantém o valor original digitado pelo usuário
   const [inputValues, setInputValues] = useState({
     faturamento: "",
     taxas_repassadas: "",
@@ -43,17 +47,11 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   });
 
   const formatCurrency = (value: string) => {
-    // Remove tudo que não é número
     const numericValue = value.replace(/\D/g, "");
-    
-    // Se não houver valor, retorna vazio
     if (!numericValue) {
       return "";
     }
-    
-    // Converte para número e divide por 100 para considerar os centavos
     const numberValue = Number(numericValue) / 100;
-    
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
@@ -72,13 +70,11 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
     const formatted = formatCurrency(rawValue);
     const numericValue = parseCurrencyToNumber(formatted);
     
-    // Atualiza o valor do input
     setInputValues(prev => ({
       ...prev,
       [field]: formatted || ""
     }));
     
-    // Atualiza o valor numérico para cálculos
     setFormData(prev => ({
       ...prev,
       [field]: numericValue
@@ -86,7 +82,6 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
   };
 
   const handleCalculate = () => {
-    // Validação de campos zerados
     if (!inputValues.faturamento || formData.faturamento <= 0) {
       toast({
         title: "Erro",
@@ -151,6 +146,23 @@ export const CalculatorForm = ({ onCalculate }: CalculatorFormProps) => {
           Descubra se sua pizzaria está perdendo dinheiro com um CMV alto
         </p>
       </div>
+
+      <Accordion type="single" collapsible className="mb-6">
+        <AccordionItem value="calculation">
+          <AccordionTrigger className="text-brand-orange hover:text-brand-orange/90">
+            Como o CMV é calculado?
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              O CMV (Custo da Mercadoria Vendida) é calculado dividindo o total de compras pelo faturamento real e multiplicando por 100 para obter a porcentagem.
+              <br /><br />
+              Fórmula: CMV = (Total de Compras ÷ Faturamento Real) × 100
+              <br /><br />
+              Para o setor de pizzarias, um CMV saudável deve estar em torno de 38%. Valores acima disso indicam que sua operação pode estar perdendo lucratividade.
+            </p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       <div className="space-y-6">
         <div className="space-y-2">
