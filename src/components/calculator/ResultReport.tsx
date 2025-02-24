@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -64,7 +63,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
     setSending(true);
     try {
-      console.log("Sending email request with data:", {
+      const requestData = {
         to: email,
         result: {
           faturamento_real: result.faturamento_real,
@@ -72,21 +71,19 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
           cmv_percentual: result.cmv_percentual,
           lucro_perdido: result.lucro_perdido,
         },
+      };
+      console.log("Sending email request with data:", requestData);
+
+      const { data, error } = await supabase.functions.invoke('send-cmv-report', {
+        body: requestData
       });
 
-      const { error } = await supabase.functions.invoke('send-cmv-report', {
-        body: {
-          to: email,
-          result: {
-            faturamento_real: result.faturamento_real,
-            cmv_valor: result.cmv_valor,
-            cmv_percentual: result.cmv_percentual,
-            lucro_perdido: result.lucro_perdido,
-          },
-        },
-      });
+      console.log("Response from edge function:", { data, error });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error from edge function:", error);
+        throw error;
+      }
 
       toast({
         title: "Sucesso!",
