@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
@@ -91,6 +90,8 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
     }
   };
 
+  const isCMVHealthy = result.cmv_percentual <= 38;
+
   return (
     <>
       <motion.div
@@ -101,15 +102,27 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
       >
         <Card className="p-6 bg-gradient-to-br from-white to-gray-50">
           <div className="space-y-6">
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="w-5 h-5 text-red-500" />
-                <h2 className="text-lg font-semibold text-red-500">Atenção!</h2>
+            {isCMVHealthy ? (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="w-5 h-5 text-green-500" />
+                  <h2 className="text-lg font-semibold text-green-500">Parabéns!</h2>
+                </div>
+                <p className="text-green-600 font-medium">
+                  Sua pizzaria está com um CMV saudável. Continue com o ótimo trabalho!
+                </p>
               </div>
-              <p className="text-red-600 font-medium">
-                Sua pizzaria pode estar deixando de lucrar até R$ {getAsterisks(result.lucro_perdido)} por mês!
-              </p>
-            </div>
+            ) : (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <h2 className="text-lg font-semibold text-red-500">Atenção!</h2>
+                </div>
+                <p className="text-red-600 font-medium">
+                  Sua pizzaria pode estar deixando de lucrar até R$ {getAsterisks(result.lucro_perdido)} por mês!
+                </p>
+              </div>
+            )}
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
@@ -130,25 +143,27 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-600">CMV Percentual</p>
-                <p className="text-lg font-semibold blur-[4px]">
+                <p className="text-lg font-semibold">
                   {result.cmv_percentual.toFixed(2)}%
                 </p>
               </div>
 
               <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
                 <p className="text-sm text-gray-600">Lucro Perdido Mensal</p>
-                <p className="text-lg font-semibold text-red-500 blur-[4px]">
+                <p className={`text-lg font-semibold ${!isCMVHealthy ? 'text-red-500' : 'text-green-500'}`}>
                   {formatCurrency(result.lucro_perdido)}
                 </p>
               </div>
             </div>
 
-            <Button
-              onClick={() => setEmailOpen(true)}
-              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white mt-6"
-            >
-              Ver resultado completo
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => setEmailOpen(true)}
+                className="bg-brand-orange hover:bg-brand-orange/90 text-white mt-6 w-full md:w-1/2"
+              >
+                Ver resultado completo
+              </Button>
+            </div>
 
             <Accordion type="single" collapsible className="mt-4">
               <AccordionItem value="calculation" className="border-none">
