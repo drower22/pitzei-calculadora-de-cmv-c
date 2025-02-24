@@ -14,6 +14,12 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { DollarSign, PieChart, AlertCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import type { CalculationResult } from "./CalculatorForm";
 
 interface ResultReportProps {
@@ -35,7 +41,6 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
     }).format(value);
   };
 
-  // Gera asteriscos baseado no número de dígitos do valor
   const getAsterisks = (value: number) => {
     const numDigits = Math.floor(value).toString().length;
     return "*".repeat(numDigits);
@@ -144,6 +149,21 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
             >
               Ver resultado completo
             </Button>
+
+            <Accordion type="single" collapsible className="mt-4">
+              <AccordionItem value="calculation" className="border-none">
+                <AccordionTrigger className="text-sm text-gray-500 hover:text-gray-700 hover:no-underline py-2">
+                  Como o CMV é calculado?
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-gray-600 leading-relaxed">
+                  O CMV (Custo da Mercadoria Vendida) é calculado dividindo o total de compras pelo faturamento real e multiplicando por 100 para obter a porcentagem.
+                  <br /><br />
+                  Fórmula: CMV = (Total de Compras ÷ Faturamento Real) × 100
+                  <br /><br />
+                  Para o setor de pizzarias, um CMV saudável deve estar em torno de 38%. Valores acima disso indicam que sua operação pode estar perdendo lucratividade.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </Card>
       </motion.div>
