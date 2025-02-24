@@ -59,9 +59,13 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
     setSending(true);
     try {
       console.log('Iniciando salvamento no Supabase...', {
-        url: supabase.config.supabaseUrl,
         email,
-        result
+        dados: {
+          faturamento_real: result.faturamento_real,
+          cmv_valor: result.cmv_valor,
+          cmv_percentual: result.cmv_percentual,
+          lucro_perdido: result.lucro_perdido
+        }
       });
 
       // Primeiro, salvar os dados no Supabase
@@ -84,7 +88,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
           details: dbError.details,
           hint: dbError.hint
         });
-        throw dbError;
+        throw new Error(`Erro ao salvar dados: ${dbError.message}`);
       }
 
       console.log('Dados salvos com sucesso:', savedData);
@@ -112,7 +116,7 @@ export const ResultReport = ({ result, onBack }: ResultReportProps) => {
           name: emailError.name,
           context: emailError
         });
-        throw emailError;
+        throw new Error(`Erro ao enviar email: ${emailError.message}`);
       }
 
       console.log('Email enviado com sucesso:', emailResponse);
